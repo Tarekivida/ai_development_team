@@ -151,6 +151,10 @@ if len(sys.argv) == 2:
     with open(requirements_path, 'r') as file:
         initial_message = file.read().strip()
     print("📄 Loaded requirements file. Starting the conversation...")
+    user_proxy.initiate_chat(
+        chat_manager,
+        message=initial_message,
+    )
 else:
     initial_message = input("📝 What task should the team work on?\n> ")
 
