@@ -4,3 +4,5 @@ __pycache__/
 output/
 .env
 gitignorefolder/
+.DS_Store
+.cache/

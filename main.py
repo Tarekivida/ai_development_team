@@ -1,5 +1,3 @@
-# main.py
-
 import sys
 import pathlib
 
@@ -61,6 +59,7 @@ project_manager = AssistantAgent(
     """,
 )
 
+
 # Admin agent
 user_proxy = UserProxyAgent(
     name="Admin",
@@ -68,9 +67,30 @@ user_proxy = UserProxyAgent(
     code_execution_config=False,
 )
 
+# Debugger agent
+debugger = AssistantAgent(
+    name="Debugger",
+    llm_config=llm_config,
+    system_message="""
+    I am a debugging agent responsible for testing and validating the Engineer's code output when requested by the Project Manager.
+    
+    Role: Debugging and Testing Agent
+
+    What I Do:
+    - I write and run tests against the Engineer's output based on provided specifications.
+    - I identify bugs, errors, and edge cases, and report detailed findings.
+    - I communicate test results and recommendations back to the Project Manager.
+
+    What I Don’t Do:
+    - I don’t write new feature code or alter project architecture.
+    - I don’t assign tasks; I only execute tests when explicitly instructed by the Project Manager.
+    """,
+)
+
+
 # Setup the group chat
 group_chat = GroupChat(
-    agents=[user_proxy, project_manager, engineer],
+    agents=[user_proxy, project_manager, engineer, debugger],
     messages=[],
     max_round=100,
     send_introductions=True,
@@ -151,6 +171,10 @@ if len(sys.argv) == 2:
     with open(requirements_path, 'r') as file:
         initial_message = file.read().strip()
     print("📄 Loaded requirements file. Starting the conversation...")
+    user_proxy.initiate_chat(
+        chat_manager,
+        message=initial_message,
+    )
 else:
     initial_message = input("📝 What task should the team work on?\n> ")
 
